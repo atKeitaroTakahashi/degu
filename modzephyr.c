@@ -60,6 +60,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_1(mod_suspend_obj, mod_suspend);
 
 STATIC mp_obj_t mod_powerdown(void)
 {
+    ext_device_power(false);
     sys_pm_ctrl_enable_state(SYS_POWER_STATE_DEEP_SLEEP);
 	sys_set_power_state(SYS_POWER_STATE_DEEP_SLEEP);
     sys_pm_ctrl_disable_state(SYS_POWER_STATE_DEEP_SLEEP);
