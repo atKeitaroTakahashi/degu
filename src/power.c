@@ -9,6 +9,8 @@
 
 #include <clock_control.h>
 
+#include <nrf_power.h>
+#include <hal/nrf_clock.h>
 #include <nrfx/hal/nrf_radio.h>
 
 #include "power.h"
@@ -16,6 +18,9 @@
 void device_power(bool enable)
 {
 	if (enable) {
+		nrf_power_task_trigger(NRF_POWER_TASK_CONSTLAT);
+		nrf_clock_task_trigger(NRF_CLOCK_TASK_HFCLKSTART);
+
 		sys_pm_resume_devices();
 
 		ext_device_power(true);
@@ -28,6 +33,9 @@ void device_power(bool enable)
 		ext_device_power(false);
 
 		sys_pm_suspend_devices();
+
+		nrf_clock_task_trigger(NRF_CLOCK_TASK_HFCLKSTOP);
+		nrf_power_task_trigger(NRF_POWER_TASK_LOWPWR);
 	}
 }
 
