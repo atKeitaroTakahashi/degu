@@ -72,11 +72,20 @@ void openthread_suspend(otInstance *aInstance)
 
 void openthread_resume(otInstance *aInstance, uint8_t aChannel, otLinkModeConfig aConfig)
 {
+    s64_t uptime = k_uptime_get();
+    u32_t timeout = K_SECONDS(3);
+
     otPlatRadioEnable(aInstance);
     otPlatRadioReceive(aInstance, aChannel);
     otThreadSetLinkMode(aInstance, aConfig);
     otIp6SetEnabled(aInstance, true);
     otThreadSetEnabled(aInstance, true);
+    k_usleep(200);
     while(otThreadGetDeviceRole(aInstance) <= OT_DEVICE_ROLE_DETACHED)
-    {}
+    {
+        if(k_uptime_delta_32(&uptime) >= timeout){
+            break;
+        }
+        k_usleep(USEC_PER_MSEC * 10U);
+    }
 }
